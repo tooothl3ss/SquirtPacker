@@ -4,6 +4,20 @@ This project is a simple example of parsing and modifying Portable Executable (P
 
 ## Project Structure
 
+SquirtPacker/
+├── src/
+│   ├── dos_stub.nim            # Module for reading and rewriting the DOS stub.
+│   ├── pe_types.nim            # Contains type definitions for PE file headers.
+│   ├── pe_readers.nim          # Implements functions to read PE file headers and sections.
+│   ├── pe_writer.nim           # Implements functions to modify PE file sections. (TBD)
+│   ├── pe_header_updater.nim   # Implements functions to update PE file headers. (TBD)
+│   ├── pe_analyzer.nim         # Implements analysis of PE file properties (e.g., architecture, security flags). (TBD)
+│   ├── utils.nim               # Provides common helper functions. (TBD)
+│   ├── stuber.nim              # Stub generator for PE files. (TBD)
+│   └── SquirtPacker.nim        # The main entry point that ties everything together.
+├── LICENSE                     # Project LICENSE.
+└── README.md                   # Project overview and documentation.
+
 SquirtPacker is organized into several modules, each handling a distinct part of PE file processing:
 
 - **dos_stub.nim**: Manages reading and rewriting the DOS stub section of PE files.
