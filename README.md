@@ -20,7 +20,7 @@ SquirtPacker is organized into several modules, each handling a distinct part of
 
 To build and run the project:
 ```
-nim c -r main.nim
+nim c -r SquirtPacker.nim calc.exe
 ```
 
 ## License
