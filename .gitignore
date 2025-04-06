@@ -1,0 +1,12 @@
+# Ignore binary executable files
+*.exe
+*.dll
+*.so
+*.dylib
+*.o
+*.a
+*.out
+*.bin
+
+# Ignore Nim build artifacts and cache directories
+nimcache/
