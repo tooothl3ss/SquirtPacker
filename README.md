@@ -3,7 +3,7 @@
 This project is a simple example of parsing and modifying Portable Executable (PE) files using Nim.
 
 ## Project Structure
-
+```
 SquirtPacker/
 ├── src/
 │   ├── dos_stub.nim            # Module for reading and rewriting the DOS stub.
@@ -17,7 +17,7 @@ SquirtPacker/
 │   └── SquirtPacker.nim        # The main entry point that ties everything together.
 ├── LICENSE                     # Project LICENSE.
 └── README.md                   # Project overview and documentation.
-
+```
 SquirtPacker is organized into several modules, each handling a distinct part of PE file processing:
 
 - **dos_stub.nim**: Manages reading and rewriting the DOS stub section of PE files.
