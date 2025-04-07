@@ -1,5 +1,5 @@
 import os, streams, strutils
-import pe_types, dos_stub, pe_readers
+import pe_types, dos_stub, pe_readers, utils
 
 proc main() =
   let filename = paramStr(1)
@@ -43,7 +43,7 @@ proc main() =
       echo fieldName, " - ", fieldValue
     echo repeat("=", 8)
     #echo readSection(fileStream, sectionHeader)
-
+  #echo hexDump(fileStream, 1, 256)
   case optionalHeader.magic
   of 0x10B: echo "32-bit"
   of 0x20B: echo "64-bit"
