@@ -1,5 +1,5 @@
 import os, strformat, streams
-import times, random
+import times, random, pe_types
 
 # Call randomize() once to initialize the default random number generator.
 # If this is not called, the same results will occur every time these
@@ -59,10 +59,23 @@ proc garbageGenerator*(size: int): seq[byte] =
   var r = initRand(currentTime)
   # Create a sequence of bytes with the specified size
   var arr: seq[byte] = newSeq[byte](size)
+  # Convert the message to a sequence of bytes.
+  var msgBytes: seq[byte] = @[]
+  var message = "-^=Uwu=^-"
+  for ch in message:
+    msgBytes.add(byte(ch))
   # Fill the array with random bytes (0..255)
   for x in 0..<size:
     arr[x] = byte(r.rand(256))
   return arr
+
+
+proc readString*(str: openarray[char]): string =
+    var result = ""
+    for x in str:
+        if x != '\x00':
+            result.add(x)
+    return result
 
 # Example usage:
 #[var f = open("example.exe", fmRead)
