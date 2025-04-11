@@ -23,7 +23,7 @@ type
     e_res2*: array[10, uint16]
     e_lfanew*: int32
 
-  ImageOptionalHeader* {.packed.} = object
+  PE32_OptionalHeader* {.packed.} = object
     magic*: uint16
     majorLinkerVersion*: uint8
     minorLinkerVersion*: uint8
@@ -67,7 +67,7 @@ type
     numberOfLinenumbers*: uint16
     characteristics*: uint32
 
-  ImageFileHeader* {.packed.} = object
+  COFFFileHeader* {.packed.} = object
     machine*: uint16
     numberOfSections*: uint16
     timeDateStamp*: uint32
@@ -75,3 +75,52 @@ type
     numberOfSymbols*: uint32
     sizeOfOptionalHeader*: uint16
     characteristics*: uint16
+
+  PE64_OptionalHeader* {.packed.} = object
+    # Standard fields
+    magic*: uint16 
+    majorLinkerVersion*: uint8  
+    minorLinkerVersion*: uint8  
+    sizeOfCode*: uint32 
+    sizeOfInitializedData*: uint32 
+    sizeOfUninitializedData*: uint32 
+    addressOfEntryPoint*: uint32 
+    baseOfCode*: uint32 
+    # Windows-specific fields (64-bit)
+    imageBase*: uint64 
+    sectionAlignment*: uint32 
+    fileAlignment*: uint32 
+    majorOperatingSystemVersion*: uint16 
+    minorOperatingSystemVersion*: uint16 
+    majorImageVersion*: uint16 
+    minorImageVersion*: uint16 
+    majorSubsystemVersion*: uint16 
+    minorSubsystemVersion*: uint16 
+    win32VersionValue*: uint32 
+    sizeOfImage*: uint32 
+    sizeOfHeaders*: uint32 
+    checkSum*: uint32 
+    subsystem*: uint16 
+    dllCharacteristics*: uint16 
+    sizeOfStackReserve*: uint64 
+    sizeOfStackCommit*: uint64 
+    sizeOfHeapReserve*: uint64 
+    sizeOfHeapCommit*: uint64 
+    loaderFlags*: uint32 
+    numberOfRvaAndSizes*: uint32 
+
+  OptionalHeaderKind = enum ohk32, ohk64
+  OptionalHeader = object
+    case kind: OptionalHeaderKind
+    of ohk32: header32: PE32_OptionalHeader
+    of ohk64: header64: PE64_OptionalHeader
+
+
+  PE_File* = object
+    file*: File
+    is64bit*: bool
+    dosHeader*: ImageDosHeader
+    coffHeader*: COFFFileHeader
+    optionalHeader*: OptionalHeader
+    sectionHeaders*: seq[ImageSectionHeader]
+    sections*: seq[seq[byte]]
