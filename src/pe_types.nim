@@ -111,9 +111,9 @@ type
 
   OptionalHeaderKind = enum ohk32, ohk64
   OptionalHeader = object
-    case kind: OptionalHeaderKind
-    of ohk32: header32: PE32_OptionalHeader
-    of ohk64: header64: PE64_OptionalHeader
+    case kind: int
+    of 32: header32: PE32_OptionalHeader
+    of 64: header64: PE64_OptionalHeader
 
 
   PE_File* = object

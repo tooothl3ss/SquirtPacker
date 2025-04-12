@@ -5,12 +5,12 @@ import os, streams, strutils
 import pe_types
 
 # Reads the DOS header from the file stream
-proc readDosHeader*(pefile: PE_File) {.raises: [IOError, ValueError].} =
+proc readDosHeader*(fileStream: File): ImageDosHeader =
   var dosHeader: ImageDosHeader
   discard fileStream.readBuffer(addr dosHeader, sizeof(dosHeader))
   return dosHeader
 
-# Reads the image file header from the file stream at the given offset
+# Reads the COFF file header from the file stream at the given offset
 proc readCOFFHeader*(fileStream: File, offset: int): COFFFileHeader =
   var imgHeader: COFFFileHeader
   fileStream.setFilePos(offset)
@@ -49,3 +49,67 @@ proc readSection*(fileStream: File, header: ImageSectionHeader): seq[byte] =
   fileStream.setFilePos(dataAddress)
   discard fileStream.readBuffer(addr arr[0], sectionSize)
   return arr
+
+proc readDOSHeaderIntoPEFile*(peFile: var PE_File): bool =
+  try:
+    peFile.dosHeader = readDosHeader(peFile.file)
+    return true
+  except:
+    return false
+
+proc readCOFFHeaderIntoPEFile*(peFile: var PE_File): bool =
+  try:
+    peFile.coffHeader = readCOFFHeader(peFile.file, peFile.dosHeader.e_lfanew + 4)
+    return true
+  except:
+    return false
+
+proc readOptionalHeaderIntoPEFile*(peFile: var PE_File): bool =
+  try:
+    if peFile.is64bit:
+      peFile.optionalHeader.kind = ohk64
+      peFile.optionalHeader.header64 = read64OptionalHeader(peFile.file, peFile.dosHeader)
+    else:
+      peFile.optionalHeader.kind = ohk32
+      peFile.optionalHeader.header32 = read32OptionalHeader(peFile.file, peFile.dosHeader)
+    
+    return true
+  except:
+    return false
+
+proc readSectionsIntoPEFile*(peFile: var PE_File): bool =
+  try:
+    let sectionStartOffset = peFile.dosHeader.e_lfanew + 4 + peFile.coffHeader.sizeOfOptionalHeader
+    for i in 0..<int(peFile.coffHeader.numberOfSections):
+      let offset = sectionStartOffset + i * sizeof(ImageSectionHeader)
+      let header = readSectionHeader(peFile.file, offset)
+      peFile.sectionHeaders.add(readString(header.name), header)
+      
+      let sectionData = readSection(peFile.file, header)
+      peFile.sections.add(sectionData)
+
+    return true
+  except:
+    return false
+
+# Add these functions to read all parts of a PE file into the PE_File struct
+
+proc readPEFile*(fileStream: File): PE_File =
+  var peFile: PE_File
+  peFile.file = fileStream
+  if not readDOSHeaderIntoPEFile(peFile):
+    return invalidPEFile()
+  
+  peFile.is64bit = (peFile.coffHeader.machine == 0x8664)
+  
+  if not readCOFFHeaderIntoPEFile(peFile):
+    return invalidPEFile()
+
+  if not readOptionalHeaderIntoPEFile(peFile):
+    return invalidPEFile()
+
+  if not readSectionsIntoPEFile(peFile):
+    return invalidPEFile()
+
+  return peFile
+
