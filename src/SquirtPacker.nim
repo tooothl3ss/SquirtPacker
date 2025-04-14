@@ -18,9 +18,10 @@ proc main() =
     fileStream.close()
 
   let peFile = readPEFile(fileStream)
-  if peFile == invalidPEFile():
+  #[if peFile == invalidPEFile():
     echo "Failed to read PE file"
     quit(1)
+  ]#
 
   # Print summary info
   echo "=== PE File Information ==="
@@ -30,13 +31,24 @@ proc main() =
   echo "\nCOFF Header:"
   echo peFile.coffHeader
 
-  echo "\nOptional Header:", peFile.optionalHeader.kind
+  echo "\nOptional Header:"
+  if peFile.is64bit:
+    echo peFile.optional64Header
+    echo "kek"
+  else:
+    echo peFile.optional32Header
 
+  echo "\nData Directories: "
+  echo peFile.dataDirectories
 
   echo "\nSections:"
-  for i, section in pairs(peFile.sectionHeaders):
-    echo "Section ", i+1, ": ", readString(section.name)
+  for section in pairs(peFile.sectionHeaders):
+    echo "Section: ", section
     #echo hexDump(sectionData[section.pointerToRawData..section.pointerToRawData + section.sizeOfRawData])
+
+  echo "\nRaw PE sections:"
+  for section in peFile.sections:
+    echo "Length of section: ", len(section)
 
 when isMainModule:
   main()

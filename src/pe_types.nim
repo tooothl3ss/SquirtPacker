@@ -1,7 +1,7 @@
 # pe_types.nim
 # This module defines the data structures for parsing PE (Portable Executable) files.
-
 type
+
   ImageDosHeader* {.packed.} = object
     e_magic*: uint16
     e_cblp*: uint16
@@ -109,18 +109,35 @@ type
     loaderFlags*: uint32 
     numberOfRvaAndSizes*: uint32 
 
-  OptionalHeaderKind = enum ohk32, ohk64
-  OptionalHeader = object
-    case kind: int
-    of 32: header32: PE32_OptionalHeader
-    of 64: header64: PE64_OptionalHeader
+  DataDirectory* {.packed.} = object
+    rva*: uint32    # 4 байта (DWORD)
+    size*: uint32   # 4 байта (DWORD)
 
+  ImageDataDirectories* {.packed.} = object
+    export_dir*: DataDirectory       # 0. Export Directory
+    import_dir*: DataDirectory       # 1. Import Directory
+    resource_dir*: DataDirectory     # 2. Resource Directory
+    exception_dir*: DataDirectory    # 3. Exception Directory
+    security_dir*: DataDirectory     # 4. Security Directory
+    basereloc_dir*: DataDirectory    # 5. Base Relocation Table
+    debug_dir*: DataDirectory        # 6. Debug Directory
+    architecture_dir*: DataDirectory # 7. Architecture Specific Data
+    global_ptr*: DataDirectory       # 8. RVA of GP
+    tls_dir*: DataDirectory          # 9. TLS Directory
+    load_config_dir*: DataDirectory  # 10. Load Configuration Directory
+    bound_import_dir*: DataDirectory # 11. Bound Import Directory
+    iat_dir*: DataDirectory          # 12. Import Address Table
+    delay_import_dir*: DataDirectory # 13. Delay Load Import Descriptors
+    com_descriptor*: DataDirectory   # 14. COM Runtime descriptor
+    reserved_dir*: DataDirectory     # 15. Reserved
 
   PE_File* = object
     file*: File
     is64bit*: bool
     dosHeader*: ImageDosHeader
     coffHeader*: COFFFileHeader
-    optionalHeader*: OptionalHeader
+    optional32Header*: PE32_OptionalHeader
+    optional64Header*: PE64_OptionalHeader
+    dataDirectories*: ImageDataDirectories
     sectionHeaders*: seq[ImageSectionHeader]
     sections*: seq[seq[byte]]

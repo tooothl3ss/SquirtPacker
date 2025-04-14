@@ -7,7 +7,7 @@ import times, random, pe_types
 randomize()
 ## Returns a hex dump of the file contents.
 ## Seeks to the given offset in the file, reads 'count' bytes,
-## and returns a formatted string with hex and ASCII values.
+#[ and returns a formatted string with hex and ASCII values.
 proc hexDump*(file: File, offset: int, count: int): string =
   if file == nil:
     return "Error: file pointer is nil."
@@ -49,7 +49,7 @@ proc hexDump*(file: File, offset: int, count: int): string =
       result.add "|\n"
       ]#
   return result
-
+]#
 
 proc garbageGenerator*(size: int): seq[byte] =
   # Get the current date and time (DateTime type)
