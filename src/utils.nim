@@ -54,7 +54,7 @@ proc hexDump*(file: File, offset: int, count: int): string =
 proc garbageGenerator*(size: int): seq[byte] =
   # Get the current date and time (DateTime type)
   var currentTime = int(cpuTime())
-  echo currentTime
+  #echo currentTime
   # Initialize the random generator using the Unix time as seed
   var r = initRand(currentTime)
   # Create a sequence of bytes with the specified size

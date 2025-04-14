@@ -85,7 +85,7 @@ proc readOptionalHeaderIntoPEFile*(peFile: var PE_File): bool =
   
   try:
     if peFile.is64bit:
-      echo "[!] - is64? - ", peFile.is64bit
+      #echo "[!] - is64? - ", peFile.is64bit
       peFile.optional64Header = read64OptionalHeader(peFile.file, peFile.dosHeader)
     else:
       peFile.optional32Header = read32OptionalHeader(peFile.file, peFile.dosHeader)
@@ -101,7 +101,7 @@ proc readSectionsIntoPEFile*(peFile: var PE_File): bool =
       let offset = sectionStartOffset + i * sizeof(ImageSectionHeader)
       let header = readSectionHeader(peFile.file, offset)
       peFile.sectionHeaders.add(header)
-      echo "Numbers of sections ", peFile.coffHeader.numberOfSections
+      #echo "Numbers of sections ", peFile.coffHeader.numberOfSections
       let sectionData = readSection(peFile.file, header)
       peFile.sections.add(sectionData)
     return true
