@@ -4,14 +4,6 @@
 import os, streams, strutils, tables, std/strformat
 import pe_types, dos_stub, pe_readers, utils, pe_header_updater
 
-# Helper procedure to print a formatted header.
-proc printHeader*(title: string) =
-  echo "\n=== ", title, " ==="
-
-# Helper procedure to print a separator line.
-proc printSeparator*() =
-  echo "----------------------------------------"
-
 proc main() =
   # Check command-line arguments.
   if paramCount() != 1:

@@ -69,6 +69,14 @@ proc garbageGenerator*(size: int): seq[byte] =
     arr[x] = byte(r.rand(256))
   return arr
 
+# Helper procedure to print a formatted header.
+proc printHeader*(title: string) =
+  echo "\n=== ", title, " ==="
+
+# Helper procedure to print a separator line.
+proc printSeparator*() =
+  echo "----------------------------------------"
+
 
 proc readString*(str: openarray[char]): string =
     var result = ""
