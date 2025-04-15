@@ -1,9 +1,19 @@
-# Update main function to use the new PE_File reading functions
-import os, streams, strutils, tables
+# main.nim
+# This module demonstrates how to use the new PE_File reading functions and prints out a formatted summary of the PE file.
+
+import os, streams, strutils, tables, std/strformat
 import pe_types, dos_stub, pe_readers, utils, pe_header_updater
 
+# Helper procedure to print a formatted header.
+proc printHeader*(title: string) =
+  echo "\n=== ", title, " ==="
+
+# Helper procedure to print a separator line.
+proc printSeparator*() =
+  echo "----------------------------------------"
 
 proc main() =
+  # Check command-line arguments.
   if paramCount() != 1:
     echo "Usage: SquirtPacker <input_file>"
     quit(1)
@@ -13,42 +23,49 @@ proc main() =
     echo "File not found: ", filename
     quit(1)
 
+  # Open the file stream in read-write mode; ensure it's closed when done.
   var fileStream = open(filename, fmReadWriteExisting)
   defer:
     fileStream.close()
 
-  let peFile = readPEFile(fileStream)
-  #[if peFile == invalidPEFile():
-    echo "Failed to read PE file"
-    quit(1)
-  ]#
+  # Read the complete PE file structure using the reader procedures.
+  var peFile = readPEFile(fileStream)
 
-  # Print summary info
-  echo "=== PE File Information ==="
-  echo "DOS Header:"
+  # Print a formatted summary of the PE file.
+  printHeader("PE File Information")
+
+  echo "\n[DOS Header]"
   echo peFile.dosHeader
+  printSeparator()
 
-  echo "\nCOFF Header:"
+  echo "\n[COFF Header]"
   echo peFile.coffHeader
+  printSeparator()
 
-  echo "\nOptional Header:"
+  echo "\n[Optional Header]"
   if peFile.is64bit:
+    echo "Architecture: 64-bit (PE32+)"
     echo peFile.optional64Header
-    echo "kek"
   else:
+    echo "Architecture: 32-bit (PE32)"
     echo peFile.optional32Header
+  printSeparator()
 
-  echo "\nData Directories: "
+  echo "\n[Data Directories]"
   echo peFile.dataDirectories
+  printSeparator()
 
-  echo "\nSections:"
-  for section in pairs(peFile.sectionHeaders):
-    echo "Section: ", section
-    #echo hexDump(sectionData[section.pointerToRawData..section.pointerToRawData + section.sizeOfRawData])
+  echo "\n[Section Headers]"
+  # Iterate over section headers with index for better clarity.
+  for idx, header in peFile.sectionHeaders.pairs:
+    echo fmt"[Section {idx}]: {header}"
+  printSeparator()
 
-  echo "\nRaw PE sections:"
-  for section in peFile.sections:
-    echo "Length of section: ", len(section)
+  echo "\n[Raw Section Data]"
+  # Print summary information for raw section data lengths.
+  for idx, sectionData in peFile.sections.pairs:
+    echo fmt"Section {idx}: Length = {len(sectionData)} bytes"
+  printSeparator()
 
 when isMainModule:
   main()
