@@ -10,6 +10,10 @@ proc main() =
     echo "Usage: SquirtPacker <input_file>"
     quit(1)
 
+  var p = newParser:
+  option("-f", "--file", help="Path to file")
+  
+
   let filename = paramStr(1)
   if not fileExists(filename):
     echo "File not found: ", filename

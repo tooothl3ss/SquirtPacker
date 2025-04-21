@@ -1,4 +1,4 @@
-import os, strformat, streams
+import os, strformat, streams, argparse
 import times, random, pe_types
 
 # Call randomize() once to initialize the default random number generator.
